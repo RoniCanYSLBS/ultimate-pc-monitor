@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor </title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+    <div class="container">
+        <div class="chart-card">
+            <canvas id="cpuChart"></canvas>
+            <p id="cpuUsage">CPU Usage: 0%</p>
+        </div>
+        <div class="chart-card">
+            <canvas id="ramChart"></canvas>
+            <p id="ramUsage">RAM Usage: 0%</p>
+        </div>
+        <div class="chart-card">
+            <canvas id="diskChart"></canvas>
+            <p id="diskUsage">Disk Usage: 0%</p>
+        </div>
+        <div class="chart-card">
+            <canvas id="gpuChart"></canvas>
+            <p id="gpuUsage">GPU Usage: 0%</p>
+            <div id="gpuDevices"></div>
+        </div>
+        <div class="chart-card">
+            <canvas id="networkChart"></canvas>
+            <p id="networkUsage">Network Speed: 0 MB/s</p>
+        </div>
+        <div class="chart-card full-width">
+            <p id="systemLoad">System Load: 0%</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Background WebGL-like particles
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const particleCount = 150; // daha fazla sayı
+        const particles = [];
+
+        for(let i=0;i<particleCount;i++){
+            particles.push({
+                x: Math.random()*width,
+                y: Math.random()*height,
+                radius: Math.random()*2 + 1, // küçük boyut
+                dx: (Math.random()-0.5)*0.5,
+                dy: (Math.random()-0.5)*0.5
+            });
+        }
+
+        function animateParticles(mouseX, mouseY){
+            ctx.clearRect(0,0,width,height);
+            for(let p of particles){
+                p.x += p.dx + (mouseX ? (mouseX-width/2)/500 : 0);
+                p.y += p.dy + (mouseY ? (mouseY-height/2)/500 : 0);
+
+                if(p.x < 0) p.x = width;
+                if(p.x > width) p.x = 0;
+                if(p.y < 0) p.y = height;
+                if(p.y > height) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+                ctx.fillStyle = 'rgba(0,255,255,0.7)';
+                ctx.fill();
+            }
+            requestAnimationFrame(()=>animateParticles(mouseX, mouseY));
+        }
+
+        let mouseX = null;
+        let mouseY = null;
+        window.addEventListener('mousemove', (e)=>{
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        animateParticles();
+        setInterval(()=>animateParticles(mouseX, mouseY),16);
+
+        window.addEventListener('resize', ()=>{
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html

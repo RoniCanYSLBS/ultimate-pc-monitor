@@ -1,0 +1,7 @@
+psutil
+GPUtil
+pythonnet
+pynvml
+wmi
+flask
+flask-cors
